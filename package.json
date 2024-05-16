@@ -46,7 +46,8 @@
     "test:series": "npx nx run-many --all --target=test --parallel=5 -- --runInBand",
     "test:core": "npx nx run core:test -- --coverage --runInBand",
     "test:others": "npx nx run-many --all --target=test --exclude core --parallel=5 -- --runInBand",
-    "test:watch": "npx nx run-many --all --target=test --parallel -- --watch"
+    "test:watch": "npx nx run-many --all --target=test --parallel -- --watch",
+    "build:server": "http-server -p 8081 dist"
   },
   "jest-junit": {
     "addFileAttribute": "true"
@@ -66,6 +67,7 @@
     "card-validator": "^6.2.0",
     "core-js": "^3.31.0",
     "current-script-polyfill": "^1.0.0",
+    "http-server": "^14.1.1",
     "iframe-resizer": "^3.6.6",
     "local-storage-fallback": "^4.1.2",
     "lodash": "^4.17.15",
