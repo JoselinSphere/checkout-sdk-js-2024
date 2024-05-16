@@ -33,3 +33,5 @@ export {
     ShippingAddressRequestBody,
 } from './shipping';
 export { getShippingAddress } from './shipping/shipping-addresses.mock';
+
+console.log("/home/mesajil/repositories/checkout-sdk-js-2024/packages/core/src/index.ts: Importing all the modules from the core package.");
