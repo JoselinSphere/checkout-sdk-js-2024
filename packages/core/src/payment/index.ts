@@ -73,3 +73,5 @@ export { default as PaymentStrategyState } from './payment-strategy-state';
 export { default as PaymentStrategyType } from './payment-strategy-type';
 export { default as StorefrontPaymentRequestSender } from './storefront-payment-request-sender';
 export { default as StorefrontStoredCardRequestSender } from './storefront-stored-card-request-sender';
+
+console.log("Path: packages/core/src/payment/index.ts: Importing the named exports from the payment module.");
