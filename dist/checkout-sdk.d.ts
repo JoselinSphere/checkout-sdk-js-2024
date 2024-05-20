@@ -34,6 +34,19 @@ import { WithEcpInstrument } from '@bigcommerce/checkout-sdk/payment-integration
 import { WithSepaInstrument } from '@bigcommerce/checkout-sdk/payment-integration-api';
 import { createTimeout } from '@bigcommerce/request-sender';
 
+
+
+// nterfaces que necesitaremos para el metodo culqi 
+declare interface CulqiPaymentInitializeOptions {
+    publicKey: string;
+}
+
+declare interface CulqiOptions {
+    status: string;
+}
+
+
+
 declare type AccountInstrument = PayPalInstrument | BankInstrument | AchInstrument;
 
 declare interface AchInstrument extends BaseAccountInstrument {
