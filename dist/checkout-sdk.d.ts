@@ -36,7 +36,7 @@ import { createTimeout } from '@bigcommerce/request-sender';
 
 
 
-// nterfaces que necesitaremos para el metodo culqi 
+// interfaces que necesitaremos para el metodo culqi 
 declare interface CulqiPaymentInitializeOptions {
     publicKey: string;
 }

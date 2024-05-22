@@ -68,6 +68,7 @@ enum PaymentStrategyType {
     STRIPE_GOOGLE_PAY = 'googlepaystripe',
     SEZZLE = 'sezzle',
     ZIP = 'zip',
+    CULQI = 'culqi'
 }
 
 export default PaymentStrategyType;

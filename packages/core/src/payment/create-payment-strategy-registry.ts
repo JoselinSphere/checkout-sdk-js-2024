@@ -636,5 +636,21 @@ export default function createPaymentStrategyRegistry(
             ),
     );
 
+    /* quiero agregar el registro de culqui siguiendo el ejemplo de los demas
+        metodos de pago 
+    registry.register(
+        PaymentStrategyType.CULQI,
+        () =>
+            new CulqiPaymetStrategy(
+                store,
+                checkoutActionCreator,
+                paymentMethodActionCreator,
+                paymentStrategyActionCreator,
+                paymentActionCreator,
+                orderActionCreator,
+                createGooglePayPaymentProcessor(store, new GooglePayWorldpayAccessInitializer()),
+            ),
+    );*/
+
     return registry;
 }
