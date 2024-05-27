@@ -531,7 +531,7 @@ export default function createPaymentStrategyRegistry(
     );
 
     registry.register(
-        PaymentStrategyType.Culqi,
+        PaymentStrategyType.CULQI,
         () =>
             new WorldpayaccessPaymetStrategy(
                 store,
