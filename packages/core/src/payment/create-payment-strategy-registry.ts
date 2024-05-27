@@ -531,6 +531,17 @@ export default function createPaymentStrategyRegistry(
     );
 
     registry.register(
+        PaymentStrategyType.Culqi,
+        () =>
+            new WorldpayaccessPaymetStrategy(
+                store,
+                orderActionCreator,
+                paymentActionCreator,
+                hostedFormFactory,
+            ),
+    );
+
+    registry.register(
         PaymentStrategyType.QUADPAY,
         () =>
             new QuadpayPaymentStrategy(
