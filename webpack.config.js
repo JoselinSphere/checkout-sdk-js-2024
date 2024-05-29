@@ -10,6 +10,7 @@ const {
 } = require('./webpack-common.config');
 
 const outputPath = path.join(__dirname, 'dist');
+const coreSrcPath = path.resolve(__dirname, 'src/core'); 
 
 async function getUmdConfig(options, argv) {
     const baseConfig = await getBaseConfig(options, argv);
