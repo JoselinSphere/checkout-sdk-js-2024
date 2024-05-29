@@ -46,14 +46,38 @@ async function getCjsConfig(options, argv) {
         plugins: [
             ...baseConfig.plugins,
             new DefinePlugin({
-                'process.env.NODE_ENV': 'process.env.NODE_ENV',
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
             }),
         ],
     };
 }
 
+async function getLoaderConfig(options, argv) {
+    const baseConfig = await getBaseConfig(options, argv);
+
+    return {
+        ...baseConfig,
+        name: 'loader',
+        entry: {
+            'loader': path.join(coreSrcPath, 'bundles', 'loader.ts'), // Entrada específica para loader
+        },
+        output: {
+            filename: 'loader.js',
+            library: libraryName,
+            libraryTarget: 'umd',
+            path: outputPath,
+            globalObject: 'this',
+        },
+        module: {
+            rules: [...babelLoaderRules, ...baseConfig.module.rules],
+        },
+    };
+}
+
 async function getConfigs(options, argv) {
-    return [await getCjsConfig(options, argv), await getUmdConfig(options, argv)];
+    return [await getCjsConfig(options, argv), 
+            await getUmdConfig(options, argv),
+            await getLoaderConfig(options, argv)];
 }
 
 module.exports = getConfigs;

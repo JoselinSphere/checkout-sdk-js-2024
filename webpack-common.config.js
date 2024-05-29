@@ -17,7 +17,9 @@ const libraryEntries = {
     extension: path.join(coreSrcPath, 'bundles', 'extension.ts'),
     'hosted-form': path.join(coreSrcPath, 'bundles', 'hosted-form.ts'),
     'internal-mappers': path.join(coreSrcPath, 'bundles', 'internal-mappers.ts'),
+    'loader': path.join(coreSrcPath, 'bundles', 'loader.ts'),
 };
+
 
 async function getBaseConfig() {
     return {
@@ -69,7 +71,9 @@ const babelLoaderRules = [
         loader: 'babel-loader',
         include: coreSrcPath,
         options: {
-            presets: [babelEnvPreset],
+            presets: [babelEnvPreset,
+                '@babel/preset-typescript',
+            ],
         },
     },
     {
