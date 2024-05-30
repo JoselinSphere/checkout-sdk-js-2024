@@ -47,7 +47,8 @@
     "test:core": "npx nx run core:test -- --coverage --runInBand",
     "test:others": "npx nx run-many --all --target=test --exclude core --parallel=5 -- --runInBand",
     "test:watch": "npx nx run-many --all --target=test --parallel -- --watch",
-    "build:server": "http-server -p 8081 dist"
+    "build:server": "http-server -p 8081 dist",
+    "build-cdn:server": "http-server -p 8081 dist-cdn"
   },
   "jest-junit": {
     "addFileAttribute": "true"
