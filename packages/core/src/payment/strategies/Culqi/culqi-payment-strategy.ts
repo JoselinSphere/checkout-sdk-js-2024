@@ -13,33 +13,33 @@ export default class CulqiPaymentStrategy implements PaymentStrategy {
         // private _orderActionCreator: OrderActionCreator,
     ) {}
 
-    // initialize(options: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
-    //     return new Promise((resolve) => {
+   /* initialize(options: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
+        return new Promise((resolve) => {
 
-    //         resolve(this._store.getState());
-    //     });
-    // }
+            resolve(this._store.getState());
+        });
+    }
 
-    // async initialize(options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
-    //     if (options?.culqi?.containerId) {
-    //         const {
-    //             methodId,
-    //             culqi: { containerId },
-    //         } = options;
+    async initialize(options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
+        if (options?.culqi?.containerId) {
+            const {
+                methodId,
+                culqi: { containerId },
+            } = options;
 
-    //         const paymentMethod = this._store.getState().paymentMethods.getPaymentMethod(methodId);
+            const paymentMethod = this._store.getState().paymentMethods.getPaymentMethod(methodId);
 
-    //         if (paymentMethod && isCulqiPaymentMethod(paymentMethod)) {
-    //             const {
-    //                 initializationData: { widgetConfig },
-    //             } = paymentMethod;
+            if (paymentMethod && isCulqiPaymentMethod(paymentMethod)) {
+                const {
+                    initializationData: { widgetConfig },
+                } = paymentMethod;
 
-    //             await this._installWidget(containerId, widgetConfig);
-    //         }
-    //     }
+                await this._installWidget(containerId, widgetConfig);
+            }
+        }
 
-    //     return Promise.resolve(this._store.getState());
-    // }
+        return Promise.resolve(this._store.getState());
+    }*/
     async initialize(_options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
         return Promise.resolve(this._store.getState());
     }
