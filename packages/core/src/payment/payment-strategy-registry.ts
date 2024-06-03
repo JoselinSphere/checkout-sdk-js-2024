@@ -80,6 +80,10 @@ export default class PaymentStrategyRegistry extends Registry<
             return PaymentStrategyType.OFFLINE;
         }
 
+        if (paymentMethod.type === paymentMethodTypes.CULQI) {
+            return PaymentStrategyType.CULQI;
+        }
+
         throw new InvalidArgumentError(`'${methodId}' is not registered.`);
     }
 

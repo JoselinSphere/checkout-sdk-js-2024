@@ -1,2 +1,3 @@
 export const HOSTED = 'PAYMENT_TYPE_HOSTED';
 export const OFFLINE = 'PAYMENT_TYPE_OFFLINE';
+export const CULQI = 'PAYMENT_TYPE_CULQI';
