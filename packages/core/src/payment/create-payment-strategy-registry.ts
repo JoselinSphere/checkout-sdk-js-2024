@@ -102,6 +102,7 @@ import { SagePayPaymentStrategy } from './strategies/sage-pay';
 import { SquarePaymentStrategy, SquareScriptLoader } from './strategies/square';
 import { WepayPaymentStrategy, WepayRiskClient } from './strategies/wepay';
 import { WorldpayaccessPaymetStrategy } from './strategies/worldpayaccess';
+import CulqiPaymentStrategy from './strategies/Culqi/culqi-payment-strategy';
 
 export default function createPaymentStrategyRegistry(
     store: CheckoutStore,
@@ -533,11 +534,8 @@ export default function createPaymentStrategyRegistry(
     registry.register(
         PaymentStrategyType.CULQI,
         () =>
-            new WorldpayaccessPaymetStrategy(
-                store,
-                orderActionCreator,
-                paymentActionCreator,
-                hostedFormFactory,
+            new CulqiPaymentStrategy(
+                store
             ),
     );
 
