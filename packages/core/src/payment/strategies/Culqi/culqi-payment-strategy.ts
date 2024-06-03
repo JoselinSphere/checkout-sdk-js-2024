@@ -1,11 +1,10 @@
-import { OrderFinalizationNotRequiredError } from 'packages/core/src/order/errors';
 
-import PaymentStrategy from '../payment-strategy';
-import { CheckoutStore, InternalCheckoutSelectors } from 'packages/core/src/checkout';
 import { PaymentInitializeOptions } from '@bigcommerce/checkout-sdk/payment-integration-api';
-import { OrderRequestBody } from 'packages/core/src/order';
+import PaymentStrategy from '../payment-strategy';
+import { CheckoutStore, InternalCheckoutSelectors } from '../../../checkout';
+import { OrderRequestBody } from '../../../order';
 import { PaymentRequestOptions } from '../../payment-request-options';
-
+import { OrderFinalizationNotRequiredError } from '../../../order/errors';
 
 export default class CulqiPaymentStrategy implements PaymentStrategy {
     constructor(
