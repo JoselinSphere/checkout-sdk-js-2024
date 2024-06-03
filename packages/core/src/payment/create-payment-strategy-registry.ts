@@ -535,7 +535,8 @@ export default function createPaymentStrategyRegistry(
         PaymentStrategyType.CULQI,
         () =>
             new CulqiPaymentStrategy(
-                store
+                store,
+                orderActionCreator
             ),
     );
 
