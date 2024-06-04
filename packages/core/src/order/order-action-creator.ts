@@ -23,10 +23,9 @@ export default class OrderActionCreator {
     constructor(
         private _orderRequestSender: OrderRequestSender,
         private _checkoutValidator: CheckoutValidator,
-    ) { }
+    ) {}
 
     loadOrder(orderId: number, options?: RequestOptions): Observable<LoadOrderAction> {
-        console.log('custom-sdk: Loading order...');
         return new Observable((observer: Observer<LoadOrderAction>) => {
             observer.next(createAction(OrderActionType.LoadOrderRequested));
 
@@ -47,7 +46,6 @@ export default class OrderActionCreator {
         orderId: number,
         options?: RequestOptions,
     ): Observable<LoadOrderPaymentsAction> {
-        console.log('custom-sdk: Loading order payments...');
         return new Observable((observer: Observer<LoadOrderPaymentsAction>) => {
             observer.next(createAction(OrderActionType.LoadOrderPaymentsRequested));
 
@@ -70,7 +68,6 @@ export default class OrderActionCreator {
     loadCurrentOrder(
         options?: RequestOptions,
     ): ThunkAction<LoadOrderAction, InternalCheckoutSelectors> {
-        console.log('custom-sdk: Loading current order...');
         return (store) =>
             defer(() => {
                 const orderId = this._getCurrentOrderId(store.getState());
@@ -87,7 +84,6 @@ export default class OrderActionCreator {
         payload?: OrderRequestBody,
         options?: RequestOptions,
     ): ThunkAction<SubmitOrderAction, InternalCheckoutSelectors> {
-        console.log('custom-sdk: Submitting order...');
         return (store) =>
             concat(
                 of(createAction(OrderActionType.SubmitOrderRequested)),
@@ -149,7 +145,6 @@ export default class OrderActionCreator {
         orderId: number,
         options?: RequestOptions,
     ): Observable<FinalizeOrderAction | LoadOrderAction> {
-        console.log('custom-sdk: Finalizing order...');
         return concat(
             of(createAction(OrderActionType.FinalizeOrderRequested)),
             from(this._orderRequestSender.finalizeOrder(orderId, options)).pipe(
