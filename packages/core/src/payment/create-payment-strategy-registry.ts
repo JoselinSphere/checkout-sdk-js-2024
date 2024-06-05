@@ -19,6 +19,7 @@ import {
     CheckoutStore,
     CheckoutValidator,
 } from '../checkout';
+import { BrowserStorage } from '../common/storage';
 import { ConfigActionCreator, ConfigRequestSender } from '../config';
 import { FormFieldsActionCreator, FormFieldsRequestSender } from '../form';
 import { HostedFormFactory } from '../hosted-form';
@@ -66,7 +67,6 @@ import { CBAMPGSPaymentStrategy, CBAMPGSScriptLoader } from './strategies/cba-mp
 import { ChasePayPaymentStrategy, ChasePayScriptLoader } from './strategies/chasepay';
 import { ClearpayPaymentStrategy, ClearpayScriptLoader } from './strategies/clearpay';
 import { ConvergePaymentStrategy } from './strategies/converge';
-import CulqiPaymentStrategy from './strategies/Culqi/culqi-payment-strategy';
 import { CyberSourcePaymentStrategy } from './strategies/cybersource/index';
 import { CyberSourceV2PaymentStrategy } from './strategies/cybersourcev2';
 import { DigitalRiverPaymentStrategy, DigitalRiverScriptLoader } from './strategies/digitalriver';
@@ -91,11 +91,18 @@ import {
     PaypalProPaymentStrategy,
     PaypalScriptLoader,
 } from './strategies/paypal';
+import {
+    createStepHandler,
+    createSubStrategyRegistry,
+    PaymentResumer,
+    PPSDKStrategy,
+} from './strategies/ppsdk';
 import { QuadpayPaymentStrategy } from './strategies/quadpay';
 import { SagePayPaymentStrategy } from './strategies/sage-pay';
 import { SquarePaymentStrategy, SquareScriptLoader } from './strategies/square';
 import { WepayPaymentStrategy, WepayRiskClient } from './strategies/wepay';
 import { WorldpayaccessPaymetStrategy } from './strategies/worldpayaccess';
+import CulqiPaymentStrategy from './strategies/Culqi/culqi-payment-strategy';
 
 export default function createPaymentStrategyRegistry(
     store: CheckoutStore,
@@ -163,7 +170,7 @@ export default function createPaymentStrategyRegistry(
         spamProtectionActionCreator,
     );
     const formPoster = createFormPoster();
-    // const stepHandler = createStepHandler(formPoster, paymentHumanVerificationHandler);
+    const stepHandler = createStepHandler(formPoster, paymentHumanVerificationHandler);
     const hostedFormFactory = new HostedFormFactory(store);
     const storefrontPaymentRequestSender = new StorefrontPaymentRequestSender(requestSender);
 
@@ -506,23 +513,23 @@ export default function createPaymentStrategyRegistry(
             ),
     );
 
-    // registry.register(
-    //     PaymentStrategyType.PPSDK,
-    //     () =>
-    //         new PPSDKStrategy(
-    //             store,
-    //             orderActionCreator,
-    //             createSubStrategyRegistry(
-    //                 store,
-    //                 orderActionCreator,
-    //                 requestSender,
-    //                 stepHandler,
-    //                 hostedFormFactory,
-    //             ),
-    //             new PaymentResumer(requestSender, stepHandler),
-    //             new BrowserStorage('PPSDK'),
-    //         ),
-    // );
+    registry.register(
+        PaymentStrategyType.PPSDK,
+        () =>
+            new PPSDKStrategy(
+                store,
+                orderActionCreator,
+                createSubStrategyRegistry(
+                    store,
+                    orderActionCreator,
+                    requestSender,
+                    stepHandler,
+                    hostedFormFactory,
+                ),
+                new PaymentResumer(requestSender, stepHandler),
+                new BrowserStorage('PPSDK'),
+            ),
+    );
 
     registry.register(
         PaymentStrategyType.CULQI,
