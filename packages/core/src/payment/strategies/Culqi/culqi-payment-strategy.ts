@@ -11,49 +11,46 @@ export default class CulqiPaymentStrategy implements PaymentStrategy {
     constructor(
         private _store: CheckoutStore,
         private _orderActionCreator: OrderActionCreator,
-    ) {}
+    ) { }
 
-   /* initialize(options: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
-        return new Promise((resolve) => {
+    /* initialize(options: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
+         return new Promise((resolve) => {
+ 
+             resolve(this._store.getState());
+         });
+     }
+ 
+     async initialize(options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
+         if (options?.culqi?.containerId) {
+             const {
+                 methodId,
+                 culqi: { containerId },
+             } = options;
+ 
+             const paymentMethod = this._store.getState().paymentMethods.getPaymentMethod(methodId);
+ 
+             if (paymentMethod && isCulqiPaymentMethod(paymentMethod)) {
+                 const {
+                     initializationData: { widgetConfig },
+                 } = paymentMethod;
+ 
+                 await this._installWidget(containerId, widgetConfig);
+             }
+         }
+ 
+         return Promise.resolve(this._store.getState());
+     }*/
 
-            resolve(this._store.getState());
-        });
-    }
-
-    async initialize(options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
-        if (options?.culqi?.containerId) {
-            const {
-                methodId,
-                culqi: { containerId },
-            } = options;
-
-            const paymentMethod = this._store.getState().paymentMethods.getPaymentMethod(methodId);
-
-            if (paymentMethod && isCulqiPaymentMethod(paymentMethod)) {
-                const {
-                    initializationData: { widgetConfig },
-                } = paymentMethod;
-
-                await this._installWidget(containerId, widgetConfig);
-            }
-        }
-
-        return Promise.resolve(this._store.getState());
-    }*/
-    async initialize(_options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
-        return Promise.resolve(this._store.getState());
-    }
-
-    async execute(payload: OrderRequestBody, options?: PaymentRequestOptions): Promise<InternalCheckoutSelectors> {
+    async execute(payload: OrderRequestBody): Promise<InternalCheckoutSelectors> {
         // Implementar lógica de ejecución de pago
-        const { payment, ...order } = payload;
+        const { payment } = payload;
 
         if (!payment) {
             throw new PaymentArgumentInvalidError(['payment']);
         }
 
         // Primero, envía el pedido a BigCommerce
-        await this._store.dispatch(this._orderActionCreator.submitOrder(order, options));
+        await this._store.dispatch(this._orderActionCreator.submitOrder());
 
         // try {
         //     // Obtén el token de Culqi usando los detalles del pago
@@ -76,6 +73,10 @@ export default class CulqiPaymentStrategy implements PaymentStrategy {
         return Promise.resolve(this._store.getState());
     }
 
+    async initialize(_options?: PaymentInitializeOptions): Promise<InternalCheckoutSelectors> {
+        return Promise.resolve(this._store.getState());
+    }
+
     finalize(_options?: PaymentRequestOptions): Promise<InternalCheckoutSelectors> {
         return Promise.reject(new OrderFinalizationNotRequiredError());
     }
@@ -84,5 +85,5 @@ export default class CulqiPaymentStrategy implements PaymentStrategy {
         return Promise.resolve(this._store.getState());
     }
 
-    
+
 }
