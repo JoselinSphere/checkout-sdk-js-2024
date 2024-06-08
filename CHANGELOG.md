@@ -2,6 +2,132 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.618.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.617.2...v1.618.0) (2024-06-06)
+
+
+### Features
+
+* **payment:** PAYPAL-4231 added onCreditCardFieldsRenderingError callback to ppcp cc payment strategy to let handle an error on UI side ([#2536](https://github.com/bigcommerce/checkout-sdk-js/issues/2536)) ([04747be](https://github.com/bigcommerce/checkout-sdk-js/commit/04747bece0afd305040cb2957d34d9e9e464d470))
+
+### [1.617.2](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.617.1...v1.617.2) (2024-06-06)
+
+
+### Code Refactoring
+
+* **payment:** PAYPAL-4251 updated Braintree Fastlane strategies to run the flow only for guests ([#2535](https://github.com/bigcommerce/checkout-sdk-js/issues/2535)) ([9f28a10](https://github.com/bigcommerce/checkout-sdk-js/commit/9f28a1092f6f317bf3b163565db8f4e35b30ee2c))
+
+### [1.617.1](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.617.0...v1.617.1) (2024-06-06)
+
+
+### Code Refactoring
+
+* **payment:** PAYPAL-3598 updated PPCP Fastlane strategies to trigger the flow only for Guests ([#2534](https://github.com/bigcommerce/checkout-sdk-js/issues/2534)) ([065bb3d](https://github.com/bigcommerce/checkout-sdk-js/commit/065bb3d7125162ef3c8e18da3487bc213485ea2c))
+
+## [1.617.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.616.0...v1.617.0) (2024-06-06)
+
+
+### Features
+
+* **payment:** PI-1596 Refactor `cybersource` and `cybersourcev2` payment strategies to use Payment Integration API ([#2529](https://github.com/bigcommerce/checkout-sdk-js/issues/2529)) ([6b9a5f4](https://github.com/bigcommerce/checkout-sdk-js/commit/6b9a5f478f8f7b4f50f52b9c731d513f26b25b75))
+
+## [1.616.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.615.0...v1.616.0) (2024-06-04)
+
+
+### Features
+
+* **payment:** PAYPAL-2518 Add challengeRequested property to 3D Secure ([#2526](https://github.com/bigcommerce/checkout-sdk-js/issues/2526)) ([293cc71](https://github.com/bigcommerce/checkout-sdk-js/commit/293cc7155cdc4df079021cc268fc6cf30fe416c1))
+
+## [1.615.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.614.1...v1.615.0) (2024-06-04)
+
+
+### Features
+
+* **payment:** PAYPAL-4138 prefilled cardholder name ([#2530](https://github.com/bigcommerce/checkout-sdk-js/issues/2530)) ([839f27b](https://github.com/bigcommerce/checkout-sdk-js/commit/839f27b68f88750fc20753c761fdb6dda3413ed8))
+
+### [1.614.1](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.614.0...v1.614.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* **payment:** PI-2191 fixed hosted fields validation for the WorldpayAccess and Authorize.net test cards ([#2532](https://github.com/bigcommerce/checkout-sdk-js/issues/2532)) ([f5656f5](https://github.com/bigcommerce/checkout-sdk-js/commit/f5656f56671cacd6737c04ff34117b5eebe5995c))
+
+## [1.614.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.613.0...v1.614.0) (2024-06-04)
+
+
+### Features
+
+* **payment:** PAYPAL-3520 Max capture amount failure ([#2485](https://github.com/bigcommerce/checkout-sdk-js/issues/2485)) ([968015a](https://github.com/bigcommerce/checkout-sdk-js/commit/968015a205af7600dee716ae259d3f5f6c0b49de))
+
+## [1.613.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.612.1...v1.613.0) (2024-05-29)
+
+
+### Features
+
+* **payment:** PI-1578 Refactor the existing sage-pay payment strategy in Checkout SDK ([781599a](https://github.com/bigcommerce/checkout-sdk-js/commit/781599a72eebd30f72e63d4b9740a649717e2385))
+
+### [1.612.1](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.612.0...v1.612.1) (2024-05-28)
+
+## [1.612.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.611.0...v1.612.0) (2024-05-28)
+
+
+### Features
+
+* **payment:** PI-2132 Call Klarna order initialization endpoint befo… …re showing Klarna pop-up window ([#2523](https://github.com/bigcommerce/checkout-sdk-js/issues/2523)) ([18eb65c](https://github.com/bigcommerce/checkout-sdk-js/commit/18eb65c4ab6dd1ccdffee04341dd5225a1f1620c))
+
+
+### Bug Fixes
+
+* **embedded-checkout:** ISSUE-2189 Changed deprecated property of allowPaymentRequest=true to allow=payment in embedded checkout to support apple pay on Safari browser ([#2190](https://github.com/bigcommerce/checkout-sdk-js/issues/2190)) ([4cd2b8e](https://github.com/bigcommerce/checkout-sdk-js/commit/4cd2b8ef8126cec9ac9a81675cbfb6c15cbb8a71))
+
+## [1.611.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.610.0...v1.611.0) (2024-05-28)
+
+
+### Features
+
+* **payment:** PAYPAL-2520 Add 3d secure iframe window size property ([#2521](https://github.com/bigcommerce/checkout-sdk-js/issues/2521)) ([f8df60c](https://github.com/bigcommerce/checkout-sdk-js/commit/f8df60cb31f7f20663d45a0268d96731907eb0ae))
+
+## [1.610.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.609.0...v1.610.0) (2024-05-24)
+
+
+### Features
+
+* **payment:** PAYPAL-4173 navigate to payment step when shipping and billing is defined ([#2517](https://github.com/bigcommerce/checkout-sdk-js/issues/2517)) ([9860811](https://github.com/bigcommerce/checkout-sdk-js/commit/986081113ccddf9b9e8908326a393a1d371f615f))
+
+## [1.609.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.608.0...v1.609.0) (2024-05-20)
+
+
+### Features
+
+* **payment:** PI-2061 Added Amazon Pay button hidden microtext feature flag ([#2509](https://github.com/bigcommerce/checkout-sdk-js/issues/2509)) ([95b97db](https://github.com/bigcommerce/checkout-sdk-js/commit/95b97db6384db15101b8cdc99c31473fda95f52e))
+
+## [1.608.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.607.0...v1.608.0) (2024-05-20)
+
+
+### Features
+
+* **payment:** PAYPAL-4068 added BT Fastlane address shipping selector ([#2493](https://github.com/bigcommerce/checkout-sdk-js/issues/2493)) ([1b1f5d0](https://github.com/bigcommerce/checkout-sdk-js/commit/1b1f5d09e0b4681a3e6a5197c5acc3a0672ffd54))
+
+## [1.607.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.606.0...v1.607.0) (2024-05-20)
+
+
+### Features
+
+* **payment:** PAYPAL-2624 moved paypa-pro to a separate package ([#2503](https://github.com/bigcommerce/checkout-sdk-js/issues/2503)) ([7bcce03](https://github.com/bigcommerce/checkout-sdk-js/commit/7bcce03f013e5c426a6587494fa12019461c9295))
+
+## [1.606.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.605.0...v1.606.0) (2024-05-20)
+
+
+### Features
+
+* **payment:** PAYPAL-4142 added shipping option autoselect to PPCP Fastlane customer startegy ([#2512](https://github.com/bigcommerce/checkout-sdk-js/issues/2512)) ([b701314](https://github.com/bigcommerce/checkout-sdk-js/commit/b701314e403cd78e4993fe167a0f2d3ffeb4465b))
+
+## [1.605.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.604.0...v1.605.0) (2024-05-20)
+
+
+### Features
+
+* **payment:** PAYPAL-4170 fixed phone number ([#2513](https://github.com/bigcommerce/checkout-sdk-js/issues/2513)) ([631e345](https://github.com/bigcommerce/checkout-sdk-js/commit/631e345eed9d34cf771eb0a91edd6f66d71099ad))
+
 ## [1.604.0](https://github.com/bigcommerce/checkout-sdk-js/compare/v1.603.0...v1.604.0) (2024-05-15)
 
 

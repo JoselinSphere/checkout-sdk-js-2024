@@ -7,7 +7,9 @@ import {
     getBillingAddress,
     getCart,
     getConfig,
+    getConsignment,
     getCustomer,
+    getGuestCustomer,
     PaymentIntegrationServiceMock,
 } from '@bigcommerce/checkout-sdk/payment-integrations-test-utils';
 import {
@@ -35,7 +37,8 @@ describe('PayPalCommerceFastlaneCustomerStrategy', () => {
     let strategy: PayPalCommerceFastlaneCustomerStrategy;
 
     const cart = getCart();
-    const customer = getCustomer();
+    const customer = getGuestCustomer();
+    const consignments = [getConsignment()];
     const storeConfig = getConfig().storeConfig;
 
     const methodId = 'paypalcommerceacceleratedcheckout';
@@ -158,10 +161,12 @@ describe('PayPalCommerceFastlaneCustomerStrategy', () => {
         jest.spyOn(paymentIntegrationService, 'updatePaymentProviderCustomer');
         jest.spyOn(paymentIntegrationService, 'updateBillingAddress');
         jest.spyOn(paymentIntegrationService, 'updateShippingAddress');
+        jest.spyOn(paymentIntegrationService, 'selectShippingOption');
         jest.spyOn(state, 'getPaymentMethodOrThrow').mockReturnValue(paymentMethod);
         jest.spyOn(state, 'getCartOrThrow').mockReturnValue(cart);
         jest.spyOn(state, 'getCustomer').mockReturnValue(customer);
         jest.spyOn(state, 'getCustomerOrThrow').mockReturnValue(customer);
+        jest.spyOn(state, 'getConsignments').mockReturnValue(consignments);
         jest.spyOn(state, 'getBillingAddress').mockReturnValue(getBillingAddress());
         jest.spyOn(state, 'getStoreConfigOrThrow').mockReturnValue(storeConfig);
 
@@ -475,66 +480,17 @@ describe('PayPalCommerceFastlaneCustomerStrategy', () => {
             expect(paypalCommerceFastlaneUtils.lookupCustomerOrThrow).not.toHaveBeenCalled();
         });
 
-        it('does not run authentication flow for store member if experiment is on', async () => {
-            const guestCustomer = {
-                ...getCustomer(),
-                isGuest: false,
-            };
-
-            const storeConfigWithAFeature = {
-                ...storeConfig,
-                checkoutSettings: {
-                    ...storeConfig.checkoutSettings,
-                    features: {
-                        ...storeConfig.checkoutSettings.features,
-                        'PAYPAL-4001.paypal_commerce_fastlane_stored_member_flow_removal': true,
-                    },
-                },
-            };
+        it('does not run authentication flow for store member', async () => {
+            const storeMember = getCustomer();
 
             jest.spyOn(paymentIntegrationService.getState(), 'getCustomerOrThrow').mockReturnValue(
-                guestCustomer,
+                storeMember,
             );
-            jest.spyOn(
-                paymentIntegrationService.getState(),
-                'getStoreConfigOrThrow',
-            ).mockReturnValue(storeConfigWithAFeature);
 
             await strategy.initialize(initializationOptions);
             await strategy.executePaymentMethodCheckout(executionOptions);
 
             expect(paypalCommerceFastlaneUtils.connectLookupCustomerOrThrow).not.toHaveBeenCalled();
-        });
-
-        it('triggers authentication flow for guest member even if it is restricted for store member', async () => {
-            const guestCustomer = {
-                ...getCustomer(),
-                isGuest: true,
-            };
-
-            const storeConfigWithAFeature = {
-                ...storeConfig,
-                checkoutSettings: {
-                    ...storeConfig.checkoutSettings,
-                    features: {
-                        ...storeConfig.checkoutSettings.features,
-                        'PAYPAL-4001.paypal_commerce_fastlane_stored_member_flow_removal': true,
-                    },
-                },
-            };
-
-            jest.spyOn(paymentIntegrationService.getState(), 'getCustomerOrThrow').mockReturnValue(
-                guestCustomer,
-            );
-            jest.spyOn(
-                paymentIntegrationService.getState(),
-                'getStoreConfigOrThrow',
-            ).mockReturnValue(storeConfigWithAFeature);
-
-            await strategy.initialize(initializationOptions);
-            await strategy.executePaymentMethodCheckout(executionOptions);
-
-            expect(paypalCommerceFastlaneUtils.connectLookupCustomerOrThrow).toHaveBeenCalled();
         });
 
         it('loads payment method to get related data', async () => {
@@ -653,10 +609,40 @@ describe('PayPalCommerceFastlaneCustomerStrategy', () => {
             expect(paymentIntegrationService.updateShippingAddress).toHaveBeenCalledWith(
                 bcAddressMock,
             );
+            expect(paymentIntegrationService.selectShippingOption).toHaveBeenCalledWith(
+                consignments[0]?.availableShippingOptions
+                    ? consignments[0]?.availableShippingOptions[0].id
+                    : undefined,
+            );
             expect(paypalCommerceFastlaneUtils.updateStorageSessionId).toHaveBeenCalledWith(
                 false,
                 cart.id,
             );
+        });
+
+        it('does not select shipping option for paypal fastlane authentication flow', async () => {
+            paymentMethod.initializationData.isFastlaneEnabled = true;
+
+            const storeConfigWithAFeature = {
+                ...storeConfig,
+                checkoutSettings: {
+                    ...storeConfig.checkoutSettings,
+                    features: {
+                        ...storeConfig.checkoutSettings.features,
+                        'PAYPAL-4142.disable_paypal_fastlane_one_click_experience': true,
+                    },
+                },
+            };
+
+            jest.spyOn(
+                paymentIntegrationService.getState(),
+                'getStoreConfigOrThrow',
+            ).mockReturnValue(storeConfigWithAFeature);
+
+            await strategy.initialize(initializationOptions);
+            await strategy.executePaymentMethodCheckout(executionOptions);
+
+            expect(paymentIntegrationService.selectShippingOption).not.toHaveBeenCalled();
         });
 
         it('calls continueWithCheckoutCallback callback in the end of execution flow', async () => {

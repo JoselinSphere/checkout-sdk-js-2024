@@ -14,6 +14,7 @@ import {
     BraintreeFastlaneVaultedInstrument,
     BraintreeInitializationData,
     BraintreeIntegrationService,
+    isBraintreeConnectPhone,
 } from '@bigcommerce/checkout-sdk/braintree-utils';
 import {
     CardInstrument,
@@ -203,13 +204,14 @@ export default class BraintreeFastlaneUtils {
         }
     }
 
-    async runPayPalFastlaneAuthenticationFlowOrThrow(email?: string): Promise<void> {
+    async runPayPalFastlaneAuthenticationFlowOrThrow(
+        email?: string,
+        shouldSetShippingOption?: boolean,
+    ): Promise<void> {
         try {
             const methodId = this.getMethodIdOrThrow();
-
             const braintreeFastlane = this.getBraintreeFastlaneOrThrow();
             const { lookupCustomerByEmail, triggerAuthenticationFlow } = braintreeFastlane.identity;
-
             const state = this.paymentIntegrationService.getState();
             const cart = state.getCartOrThrow();
             const customer = state.getCustomer();
@@ -235,6 +237,7 @@ export default class BraintreeFastlaneUtils {
             const { authenticationState, profileData } = await triggerAuthenticationFlow(
                 customerContextId,
             );
+            const phoneNumber = profileData?.shippingAddress?.phoneNumber || '';
 
             if (authenticationState === BraintreeFastlaneAuthenticationState.CANCELED) {
                 await this.paymentIntegrationService.updatePaymentProviderCustomer({
@@ -249,12 +252,14 @@ export default class BraintreeFastlaneUtils {
             }
 
             const shippingAddresses =
-                this.mapPayPalToBcAddress([profileData.shippingAddress]) || [];
+                this.mapPayPalToBcAddress([profileData.shippingAddress], [phoneNumber]) || [];
             const paypalBillingAddress = this.getPayPalFastlaneBillingAddress(profileData);
             const billingAddresses = paypalBillingAddress
-                ? this.mapPayPalToBcAddress([paypalBillingAddress])
+                ? this.mapPayPalToBcAddress([paypalBillingAddress], [phoneNumber])
                 : [];
-            const instruments = this.mapPayPalToBcInstrument(methodId, [profileData.card]) || [];
+            const instruments = profileData.card
+                ? this.mapPayPalToBcInstrument(methodId, [profileData.card])
+                : [];
             const addresses = this.mergeShippingAndBillingAddresses(
                 shippingAddresses,
                 billingAddresses,
@@ -284,11 +289,16 @@ export default class BraintreeFastlaneUtils {
                     firstName,
                     lastName,
                 };
+
                 await this.paymentIntegrationService.updateBillingAddress(digitalItemBilling);
             }
 
             if (shippingAddresses.length > 0 && cart.lineItems.physicalItems.length > 0) {
                 await this.paymentIntegrationService.updateShippingAddress(shippingAddresses[0]);
+
+                if (shouldSetShippingOption) {
+                    await this.setShippingOption();
+                }
             }
         } catch (error) {
             // TODO: we should figure out what to do here
@@ -334,15 +344,22 @@ export default class BraintreeFastlaneUtils {
 
     private mapPayPalToBcAddress(
         addresses?: BraintreeFastlaneAddress[],
-        phones?: BraintreeConnectPhone[],
+        phones?: BraintreeConnectPhone[] | string[],
     ): CustomerAddress[] {
         if (!addresses) {
             return [];
         }
 
         const countries = this.paymentIntegrationService.getState().getCountries() || [];
-        const phoneNumber =
-            phones && phones[0] ? phones[0].country_code + phones[0].national_number : '';
+        let phoneNumber: string;
+
+        if (phones && typeof phones[0] === 'string') {
+            phoneNumber = phones[0];
+        }
+
+        if (phones && isBraintreeConnectPhone(phones[0])) {
+            phoneNumber = phones[0].country_code + phones[0].national_number;
+        }
 
         const getCountryNameByCountryCode = (countryCode: string) => {
             const matchedCountry = countries.find((country) => country.code === countryCode);
@@ -364,7 +381,7 @@ export default class BraintreeFastlaneUtils {
             country: getCountryNameByCountryCode(address.countryCodeAlpha2),
             countryCode: address.countryCodeAlpha2,
             postalCode: address.postalCode,
-            phone: phoneNumber,
+            phone: phoneNumber || '',
             customFields: [],
         }));
     }
@@ -419,7 +436,7 @@ export default class BraintreeFastlaneUtils {
         }
 
         const { firstName, lastName } = card.paymentSource.card.billingAddress;
-        const { given_name, surname } = name || {};
+        const { firstName: given_name, lastName: surname } = name || {};
         const { shippingAddress } = profileData || {};
         const address = {
             ...card.paymentSource.card.billingAddress,
@@ -470,5 +487,20 @@ export default class BraintreeFastlaneUtils {
         }
 
         return this.methodId;
+    }
+
+    private async setShippingOption(): Promise<void> {
+        const state = this.paymentIntegrationService.getState();
+        const consignments = state.getConsignments() || [];
+        const availableShippingOptions = consignments[0]?.availableShippingOptions || [];
+        const recommendedShippingOption = availableShippingOptions.find(
+            (option) => option.isRecommended,
+        );
+
+        if (recommendedShippingOption || availableShippingOptions.length) {
+            const selectedOption = recommendedShippingOption || availableShippingOptions[0];
+
+            await this.paymentIntegrationService.selectShippingOption(selectedOption.id);
+        }
     }
 }

@@ -60,15 +60,12 @@ import {
 import {
     CardinalClient,
     CardinalScriptLoader,
-    CardinalThreeDSecureFlow,
     CardinalThreeDSecureFlowV2,
 } from './strategies/cardinal';
 import { CBAMPGSPaymentStrategy, CBAMPGSScriptLoader } from './strategies/cba-mpgs';
 import { ChasePayPaymentStrategy, ChasePayScriptLoader } from './strategies/chasepay';
 import { ClearpayPaymentStrategy, ClearpayScriptLoader } from './strategies/clearpay';
 import { ConvergePaymentStrategy } from './strategies/converge';
-import { CyberSourcePaymentStrategy } from './strategies/cybersource/index';
-import { CyberSourceV2PaymentStrategy } from './strategies/cybersourcev2';
 import { DigitalRiverPaymentStrategy, DigitalRiverScriptLoader } from './strategies/digitalriver';
 import {
     createGooglePayPaymentProcessor,
@@ -86,11 +83,7 @@ import {
 import { MasterpassPaymentStrategy, MasterpassScriptLoader } from './strategies/masterpass';
 import { MonerisPaymentStrategy } from './strategies/moneris';
 import { OpyPaymentStrategy, OpyScriptLoader } from './strategies/opy';
-import {
-    PaypalExpressPaymentStrategy,
-    PaypalProPaymentStrategy,
-    PaypalScriptLoader,
-} from './strategies/paypal';
+import { PaypalExpressPaymentStrategy, PaypalScriptLoader } from './strategies/paypal';
 import {
     createStepHandler,
     createSubStrategyRegistry,
@@ -98,7 +91,6 @@ import {
     PPSDKStrategy,
 } from './strategies/ppsdk';
 import { QuadpayPaymentStrategy } from './strategies/quadpay';
-import { SagePayPaymentStrategy } from './strategies/sage-pay';
 import { SquarePaymentStrategy, SquareScriptLoader } from './strategies/square';
 import { WepayPaymentStrategy, WepayRiskClient } from './strategies/wepay';
 import { WorldpayaccessPaymetStrategy } from './strategies/worldpayaccess';
@@ -300,39 +292,6 @@ export default function createPaymentStrategyRegistry(
     );
 
     registry.register(
-        PaymentStrategyType.CYBERSOURCE,
-        () =>
-            new CyberSourcePaymentStrategy(
-                store,
-                orderActionCreator,
-                paymentActionCreator,
-                hostedFormFactory,
-                new CardinalThreeDSecureFlow(
-                    store,
-                    paymentActionCreator,
-                    paymentMethodActionCreator,
-                    new CardinalClient(new CardinalScriptLoader(scriptLoader)),
-                ),
-            ),
-    );
-
-    registry.register(
-        PaymentStrategyType.CYBERSOURCEV2,
-        () =>
-            new CyberSourceV2PaymentStrategy(
-                store,
-                orderActionCreator,
-                paymentActionCreator,
-                hostedFormFactory,
-                new CardinalThreeDSecureFlowV2(
-                    store,
-                    paymentActionCreator,
-                    new CardinalClient(new CardinalScriptLoader(scriptLoader)),
-                ),
-            ),
-    );
-
-    registry.register(
         PaymentStrategyType.BNZ,
         () =>
             new BNZPaymentStrategy(
@@ -476,23 +435,6 @@ export default function createPaymentStrategyRegistry(
     );
 
     registry.register(
-        PaymentStrategyType.PAYPAL,
-        () =>
-            new PaypalProPaymentStrategy(
-                store,
-                orderActionCreator,
-                paymentActionCreator,
-                hostedFormFactory,
-                new CardinalThreeDSecureFlow(
-                    store,
-                    paymentActionCreator,
-                    paymentMethodActionCreator,
-                    new CardinalClient(new CardinalScriptLoader(scriptLoader)),
-                ),
-            ),
-    );
-
-    registry.register(
         PaymentStrategyType.PAYPAL_EXPRESS,
         () =>
             new PaypalExpressPaymentStrategy(
@@ -541,18 +483,6 @@ export default function createPaymentStrategyRegistry(
                 storeCreditActionCreator,
                 remoteCheckoutActionCreator,
                 storefrontPaymentRequestSender,
-            ),
-    );
-
-    registry.register(
-        PaymentStrategyType.SAGE_PAY,
-        () =>
-            new SagePayPaymentStrategy(
-                store,
-                orderActionCreator,
-                paymentActionCreator,
-                hostedFormFactory,
-                formPoster,
             ),
     );
 

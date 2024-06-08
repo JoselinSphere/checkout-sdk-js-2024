@@ -24,6 +24,7 @@ import {
     getCart,
     getConfig,
     getCustomer,
+    getGuestCustomer,
     getShippingAddress,
     PaymentIntegrationServiceMock,
 } from '@bigcommerce/checkout-sdk/payment-integrations-test-utils';
@@ -47,7 +48,7 @@ describe('BraintreeFastlanePaymentStrategy', () => {
     const instrumentId = 'asd123';
 
     const cart = getCart();
-    const customer = getCustomer();
+    const customer = getGuestCustomer();
     const billingAddress = getBillingAddress();
     const shippingAddress = getShippingAddress();
     const storeConfig = getConfig().storeConfig;
@@ -368,30 +369,12 @@ describe('BraintreeFastlanePaymentStrategy', () => {
             ).toHaveBeenCalled();
         });
 
-        it('does not trigger lookup method for store members when experiment is on', async () => {
-            const guestCustomer = {
-                ...getCustomer(),
-                isGuest: false,
-            };
-
-            const storeConfigWithAFeature = {
-                ...storeConfig,
-                checkoutSettings: {
-                    ...storeConfig.checkoutSettings,
-                    features: {
-                        ...storeConfig.checkoutSettings.features,
-                        'PAYPAL-4001.braintree_fastlane_stored_member_flow_removal': true,
-                    },
-                },
-            };
+        it('does not trigger lookup method for store members', async () => {
+            const storeMember = getCustomer();
 
             jest.spyOn(paymentIntegrationService.getState(), 'getCustomerOrThrow').mockReturnValue(
-                guestCustomer,
+                storeMember,
             );
-            jest.spyOn(
-                paymentIntegrationService.getState(),
-                'getStoreConfigOrThrow',
-            ).mockReturnValue(storeConfigWithAFeature);
 
             await strategy.initialize(defaultInitializationOptions);
 
@@ -498,6 +481,42 @@ describe('BraintreeFastlanePaymentStrategy', () => {
             }
 
             expect(renderMethodMock).toHaveBeenCalledWith(container.id);
+        });
+
+        it('renders braintree fastlane card component with prefilled cardholder name', async () => {
+            const mockPaymentMethod = {
+                ...paymentMethod,
+                initializationData: {
+                    isAcceleratedCheckoutEnabled: true,
+                    isFastlaneEnabled: true,
+                },
+            };
+
+            const fastlaneCardOptionsMock = {
+                fields: {
+                    cardholderName: {
+                        enabled: true,
+                        prefill: 'Test Tester',
+                    },
+                    phoneNumber: {
+                        prefill: '555-555-5555',
+                    },
+                },
+                styles: {},
+            };
+
+            jest.spyOn(
+                paymentIntegrationService.getState(),
+                'getPaymentMethodOrThrow',
+            ).mockReturnValue(mockPaymentMethod);
+
+            container.id = 'pp-fastlane-container-id';
+
+            await strategy.initialize(initializationOptions);
+
+            expect(braintreeFastlaneMock.FastlaneCardComponent).toHaveBeenCalledWith(
+                fastlaneCardOptionsMock,
+            );
         });
     });
 

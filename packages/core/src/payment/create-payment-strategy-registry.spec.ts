@@ -19,16 +19,13 @@ import { CBAMPGSPaymentStrategy } from './strategies/cba-mpgs';
 import { ChasepayPaymentStrategy } from './strategies/chasepay';
 import { ClearpayPaymentStrategy } from './strategies/clearpay';
 import { ConvergePaymentStrategy } from './strategies/converge';
-import { CyberSourcePaymentStrategy } from './strategies/cybersource';
-import { CyberSourceV2PaymentStrategy } from './strategies/cybersourcev2';
 import { DigitalRiverPaymentStrategy } from './strategies/digitalriver';
 import { GooglePayPaymentStrategy } from './strategies/googlepay';
 import { MasterpassPaymentStrategy } from './strategies/masterpass';
 import { OpyPaymentStrategy } from './strategies/opy';
-import { PaypalExpressPaymentStrategy, PaypalProPaymentStrategy } from './strategies/paypal';
+import { PaypalExpressPaymentStrategy } from './strategies/paypal';
 import { PPSDKStrategy } from './strategies/ppsdk';
 import { QuadpayPaymentStrategy } from './strategies/quadpay';
-import { SagePayPaymentStrategy } from './strategies/sage-pay';
 import { SquarePaymentStrategy } from './strategies/square';
 import { WepayPaymentStrategy } from './strategies/wepay';
 
@@ -96,18 +93,6 @@ describe('CreatePaymentStrategyRegistry', () => {
         expect(paymentStrategy).toBeInstanceOf(ConvergePaymentStrategy);
     });
 
-    it('can instantiate cybersource', () => {
-        const paymentStrategy = registry.get(PaymentStrategyType.CYBERSOURCE);
-
-        expect(paymentStrategy).toBeInstanceOf(CyberSourcePaymentStrategy);
-    });
-
-    it('can instantiate cybersourcev2', () => {
-        const paymentStrategy = registry.get(PaymentStrategyType.CYBERSOURCEV2);
-
-        expect(paymentStrategy).toBeInstanceOf(CyberSourceV2PaymentStrategy);
-    });
-
     it('can instantiate bankofnewzealand', () => {
         const paymentStrategy = registry.get(PaymentStrategyType.BNZ);
 
@@ -144,12 +129,6 @@ describe('CreatePaymentStrategyRegistry', () => {
         expect(paymentStrategy).toBeInstanceOf(OpyPaymentStrategy);
     });
 
-    it('can instantiate paypal', () => {
-        const paymentStrategy = registry.get(PaymentStrategyType.PAYPAL);
-
-        expect(paymentStrategy).toBeInstanceOf(PaypalProPaymentStrategy);
-    });
-
     it('can instantiate paypalexpress', () => {
         const paymentStrategy = registry.get(PaymentStrategyType.PAYPAL_EXPRESS);
 
@@ -166,12 +145,6 @@ describe('CreatePaymentStrategyRegistry', () => {
         const paymentStrategy = registry.get(PaymentStrategyType.QUADPAY);
 
         expect(paymentStrategy).toBeInstanceOf(QuadpayPaymentStrategy);
-    });
-
-    it('can instantiate sagepay', () => {
-        const paymentStrategy = registry.get(PaymentStrategyType.SAGE_PAY);
-
-        expect(paymentStrategy).toBeInstanceOf(SagePayPaymentStrategy);
     });
 
     it('can instantiate square', () => {

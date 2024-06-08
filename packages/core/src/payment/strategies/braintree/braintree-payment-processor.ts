@@ -206,7 +206,12 @@ export default class BraintreePaymentProcessor {
             throw new NotInitializedError(NotInitializedErrorType.PaymentNotInitialized);
         }
 
-        const { addFrame, removeFrame } = this._threeDSecureOptions;
+        const {
+            addFrame,
+            removeFrame,
+            challengeRequested = true,
+            additionalInformation,
+        } = this._threeDSecureOptions;
         const cancelVerifyCard = async () => {
             const response = await threeDSecure.cancelVerifyCard();
 
@@ -224,13 +229,14 @@ export default class BraintreePaymentProcessor {
                 },
                 amount: Number(roundedAmount),
                 bin,
-                challengeRequested: true,
+                challengeRequested,
                 nonce,
                 removeFrame,
                 onLookupComplete: (_data, next) => {
                     next();
                 },
                 collectDeviceData: true,
+                additionalInformation,
             }),
         );
 

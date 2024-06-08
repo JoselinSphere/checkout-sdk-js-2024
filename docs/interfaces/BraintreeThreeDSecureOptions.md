@@ -10,10 +10,33 @@ through a web page via an iframe provided by the card issuer.
 
 ## Table of contents
 
+### Properties
+
+- [additionalInformation](BraintreeThreeDSecureOptions.md#additionalinformation)
+- [challengeRequested](BraintreeThreeDSecureOptions.md#challengerequested)
+
 ### Methods
 
 - [addFrame](BraintreeThreeDSecureOptions.md#addframe)
 - [removeFrame](BraintreeThreeDSecureOptions.md#removeframe)
+
+## Properties
+
+### additionalInformation
+
+• `Optional` **additionalInformation**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `acsWindowSize?` | ``"01"`` \| ``"02"`` \| ``"03"`` \| ``"04"`` \| ``"05"`` |
+
+___
+
+### challengeRequested
+
+• `Optional` **challengeRequested**: `boolean`
 
 ## Methods
 

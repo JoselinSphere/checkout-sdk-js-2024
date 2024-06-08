@@ -19,6 +19,7 @@ import {
     getBillingAddress,
     getCart,
     getConfig,
+    getConsignment,
     getCountries,
     getCustomer,
     PaymentIntegrationServiceMock,
@@ -44,6 +45,7 @@ describe('BraintreeFastlaneUtils', () => {
     const billingAddress = getBillingAddress();
     const paymentMethod = getBraintreeAcceleratedCheckoutPaymentMethod();
     const storeConfig = getConfig().storeConfig;
+    const consignments = [getConsignment()];
 
     const methodId = 'braintreeacceleratedcheckout';
 
@@ -75,6 +77,7 @@ describe('BraintreeFastlaneUtils', () => {
         jest.spyOn(paymentIntegrationService, 'updatePaymentProviderCustomer').mockImplementation(
             jest.fn,
         );
+        jest.spyOn(paymentIntegrationService, 'selectShippingOption');
         jest.spyOn(paymentIntegrationService.getState(), 'getCartOrThrow').mockReturnValue(cart);
         jest.spyOn(paymentIntegrationService.getState(), 'getCustomer').mockReturnValue(customer);
         jest.spyOn(paymentIntegrationService.getState(), 'getCountries').mockReturnValue(countries);
@@ -83,6 +86,9 @@ describe('BraintreeFastlaneUtils', () => {
         );
         jest.spyOn(paymentIntegrationService.getState(), 'getPaymentMethodOrThrow').mockReturnValue(
             paymentMethod,
+        );
+        jest.spyOn(paymentIntegrationService.getState(), 'getConsignments').mockReturnValue(
+            consignments,
         );
 
         jest.spyOn(braintreeIntegrationService, 'initialize');
@@ -519,6 +525,102 @@ describe('BraintreeFastlaneUtils', () => {
             await subject.runPayPalFastlaneAuthenticationFlowOrThrow();
 
             expect(braintreeFastlaneMock.identity.lookupCustomerByEmail).toHaveBeenCalled();
+        });
+
+        it('updates customer provider and billing address with correct data', async () => {
+            const expectedBillingAddress = {
+                address1: 'Hello World Address',
+                address2: '',
+                city: 'Bellingham',
+                company: '',
+                country: 'United States',
+                countryCode: 'US',
+                customFields: [],
+                firstName: 'John',
+                id: 1,
+                lastName: 'Doe',
+                phone: '12345',
+                postalCode: '98225',
+                stateOrProvince: 'WA',
+                stateOrProvinceCode: 'WA',
+                type: 'paypal-address',
+            };
+
+            const updatePaymentProviderCustomerPayload = {
+                authenticationState: BraintreeFastlaneAuthenticationState.SUCCEEDED,
+                addresses: [
+                    {
+                        id: 1,
+                        type: 'paypal-address',
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        company: '',
+                        address1: 'Hello World Address',
+                        address2: '',
+                        city: 'Bellingham',
+                        stateOrProvince: 'WA',
+                        stateOrProvinceCode: 'WA',
+                        country: 'United States',
+                        countryCode: 'US',
+                        postalCode: '98225',
+                        phone: '12345',
+                        customFields: [],
+                    },
+                ],
+                instruments: [
+                    {
+                        bigpayToken: 'pp-vaulted-instrument-id',
+                        brand: 'VISA',
+                        defaultInstrument: false,
+                        expiryMonth: undefined,
+                        expiryYear: '02/2037',
+                        iin: '',
+                        last4: '1111',
+                        method: 'braintreeacceleratedcheckout',
+                        provider: 'braintreeacceleratedcheckout',
+                        trustedShippingAddress: false,
+                        type: 'card',
+                        untrustedShippingCardVerificationMode: 'pan',
+                    },
+                ],
+            };
+            const profileData = getBraintreeFastlaneProfileDataMock();
+
+            profileData.shippingAddress.phoneNumber = '12345';
+
+            jest.spyOn(braintreeFastlaneMock.identity, 'triggerAuthenticationFlow').mockReturnValue(
+                {
+                    authenticationState: BraintreeFastlaneAuthenticationState.SUCCEEDED,
+                    profileData,
+                },
+            );
+            await subject.initializeBraintreeAcceleratedCheckoutOrThrow(methodId, undefined);
+            await subject.runPayPalFastlaneAuthenticationFlowOrThrow();
+
+            expect(paymentIntegrationService.updatePaymentProviderCustomer).toHaveBeenCalledWith(
+                updatePaymentProviderCustomerPayload,
+            );
+            expect(paymentIntegrationService.updateBillingAddress).toHaveBeenCalledWith(
+                expectedBillingAddress,
+            );
+        });
+
+        it('preselects shipping option with first shipping option', async () => {
+            await subject.initializeBraintreeAcceleratedCheckoutOrThrow(methodId, undefined);
+            await subject.runPayPalFastlaneAuthenticationFlowOrThrow(undefined, true);
+
+            expect(paymentIntegrationService.selectShippingOption).toHaveBeenCalledWith(
+                consignments[0]?.availableShippingOptions
+                    ? consignments[0]?.availableShippingOptions[0].id
+                    : undefined,
+            );
+        });
+
+        it('doesnt preselect shipping option', async () => {
+            await subject.initializeBraintreeAcceleratedCheckoutOrThrow(methodId, undefined);
+            await subject.runPayPalFastlaneAuthenticationFlowOrThrow(undefined, false);
+
+            expect(paymentIntegrationService.selectShippingOption).not.toHaveBeenCalled();
         });
 
         it('does not authenticate user if the customer unrecognized in PP Fastlane', async () => {

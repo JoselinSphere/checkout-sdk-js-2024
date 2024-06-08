@@ -144,11 +144,16 @@ export default class BraintreeFastlanePaymentStrategy implements PaymentStrategy
      */
     private async initializeCardComponent() {
         const state = this.paymentIntegrationService.getState();
-        const { phone } = state.getBillingAddressOrThrow();
+        const { phone, firstName, lastName } = state.getBillingAddressOrThrow();
+        const fullName = `${firstName} ${lastName}`;
 
         const cardComponentOptions: BraintreeFastlaneCardComponentOptions = {
             styles: {},
             fields: {
+                cardholderName: {
+                    prefill: fullName,
+                    enabled: true,
+                },
                 ...(phone && {
                     phoneNumber: {
                         prefill: phone,
@@ -165,6 +170,15 @@ export default class BraintreeFastlanePaymentStrategy implements PaymentStrategy
         } else {
             const paypalPaymentComponent =
                 this.braintreeFastlaneUtils.getBraintreeConnectComponentOrThrow();
+            const cardComponentOptions = {
+                fields: {
+                    ...(phone && {
+                        phoneNumber: {
+                            prefill: phone,
+                        },
+                    }),
+                },
+            };
 
             this.braintreeCardComponent = paypalPaymentComponent(cardComponentOptions);
         }
@@ -305,7 +319,6 @@ export default class BraintreeFastlanePaymentStrategy implements PaymentStrategy
         const state = this.paymentIntegrationService.getState();
         const cart = state.getCartOrThrow();
         const customer = state.getCustomerOrThrow();
-        const features = state.getStoreConfigOrThrow().checkoutSettings.features;
         const paymentProviderCustomer = state.getPaymentProviderCustomer();
         const braintreePaymentProviderCustomer = isBraintreeAcceleratedCheckoutCustomer(
             paymentProviderCustomer,
@@ -315,13 +328,8 @@ export default class BraintreeFastlanePaymentStrategy implements PaymentStrategy
 
         const paypalFastlaneSessionId = this.browserStorage.getItem('sessionId');
 
-        const shouldSkipFastlaneForStoredMembers =
-            features &&
-            features['PAYPAL-4001.braintree_fastlane_stored_member_flow_removal'] &&
-            !customer.isGuest;
-
         if (
-            shouldSkipFastlaneForStoredMembers ||
+            !customer.isGuest ||
             braintreePaymentProviderCustomer?.authenticationState ===
                 BraintreeFastlaneAuthenticationState.CANCELED
         ) {

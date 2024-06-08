@@ -355,6 +355,9 @@ export interface BraintreeThreeDSecureOptions {
     challengeRequested?: boolean;
     showLoader?: boolean;
     bin?: string;
+    additionalInformation?: {
+        acsWindowSize?: '01' | '02' | '03' | '04' | '05';
+    };
     addFrame?(
         error: Error | undefined,
         iframe: HTMLIFrameElement,
@@ -652,10 +655,12 @@ export interface BraintreeConnectProfileData {
     addresses: BraintreeConnectAddress[];
     cards: BraintreeConnectVaultedInstrument[];
     phones: BraintreeConnectPhone[];
-    name: {
-        given_name: string;
-        surname: string;
-    };
+    name: BraintreeConnectName;
+}
+
+export interface BraintreeConnectName {
+    given_name: string;
+    surname: string;
 }
 
 export interface BraintreeConnectAddress {
@@ -671,6 +676,7 @@ export interface BraintreeConnectAddress {
     countryCodeNumeric?: number;
     countryCodeAlpha2: string;
     countryCodeAlpha3?: string;
+    phoneNumber?: string;
 }
 
 export interface BraintreeConnectCardPaymentSource {
@@ -773,6 +779,35 @@ export interface BraintreeFastlane {
 
 export interface BraintreeFastlaneProfile {
     showCardSelector(): Promise<BraintreeFastlaneCardSelectorResponse>;
+    showShippingAddressSelector(): Promise<BraintreeFastlaneShippingAddressSelectorResponse>;
+}
+
+export interface BraintreeFastlaneShippingAddressSelectorResponse {
+    selectionChanged: boolean;
+    selectedAddress: BraintreeFastlaneShippingAddress;
+}
+
+export interface BraintreeFastlaneShippingAddress {
+    name: BraintreeFastlaneProfileName;
+    phoneNumber: string;
+    id?: string;
+    firstName?: string;
+    lastName?: string;
+    company?: string;
+    streetAddress: string;
+    extendedAddress?: string;
+    locality: string;
+    region: string;
+    postalCode: string;
+    countryCodeNumeric?: number;
+    countryCodeAlpha2: string;
+    countryCodeAlpha3?: string;
+}
+
+export interface BraintreeFastlaneProfileName {
+    fullName: string;
+    firstName?: string;
+    lastName?: string;
 }
 
 export interface BraintreeFastlaneCardSelectorResponse {
@@ -845,10 +880,12 @@ export interface BraintreeFastlaneProfileData {
     fastlaneCustomerId: string;
     shippingAddress: BraintreeFastlaneAddress;
     card: BraintreeFastlaneVaultedInstrument;
-    name: {
-        given_name: string;
-        surname: string;
-    };
+    name: BraintreeFastlaneName;
+}
+
+export interface BraintreeFastlaneName {
+    firstName: string;
+    lastName: string;
 }
 
 export interface BraintreeFastlaneAddress {
@@ -864,6 +901,7 @@ export interface BraintreeFastlaneAddress {
     countryCodeNumeric?: number;
     countryCodeAlpha2: string;
     countryCodeAlpha3?: string;
+    phoneNumber?: string;
 }
 
 export interface BraintreeFastlaneCardPaymentSource {
@@ -889,12 +927,14 @@ export interface BraintreeFastlaneCardComponentOptions {
 }
 
 export interface BraintreeFastlaneCardComponentFields {
-    [key: string]: BraintreeFastlaneCardComponentField;
-}
-
-export interface BraintreeFastlaneCardComponentField {
-    placeholder?: string;
-    prefill?: string;
+    cardholderName?: {
+        enabled?: boolean;
+        prefill?: string;
+    };
+    phoneNumber?: {
+        placeholder?: string;
+        prefill?: string;
+    };
 }
 
 export interface BraintreeFastlaneTokenizeDetails {
