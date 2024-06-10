@@ -473,6 +473,24 @@ export default function createPaymentStrategyRegistry(
     );
 
     registry.register(
+        PaymentStrategyType.CULQI,
+        () => 
+            new PPSDKStrategy(
+                store,
+                orderActionCreator,
+                createSubStrategyRegistry(
+                    store,
+                    orderActionCreator,
+                    requestSender,
+                    stepHandler,
+                    hostedFormFactory,
+                ),
+                new PaymentResumer(requestSender, stepHandler),
+                new BrowserStorage('PPSDK'),
+            ),
+    )
+
+    registry.register(
         PaymentStrategyType.QUADPAY,
         () =>
             new QuadpayPaymentStrategy(
