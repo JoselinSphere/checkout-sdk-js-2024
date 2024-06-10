@@ -94,6 +94,7 @@ import { QuadpayPaymentStrategy } from './strategies/quadpay';
 import { SquarePaymentStrategy, SquareScriptLoader } from './strategies/square';
 import { WepayPaymentStrategy, WepayRiskClient } from './strategies/wepay';
 import { WorldpayaccessPaymetStrategy } from './strategies/worldpayaccess';
+import { CULQIStrategy } from './strategies/culqi';
 
 export default function createPaymentStrategyRegistry(
     store: CheckoutStore,
@@ -475,7 +476,7 @@ export default function createPaymentStrategyRegistry(
     registry.register(
         PaymentStrategyType.CULQI,
         () => 
-            new PPSDKStrategy(
+            new CULQIStrategy(
                 store,
                 orderActionCreator,
                 createSubStrategyRegistry(
