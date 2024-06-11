@@ -84,17 +84,22 @@ import { MasterpassPaymentStrategy, MasterpassScriptLoader } from './strategies/
 import { MonerisPaymentStrategy } from './strategies/moneris';
 import { OpyPaymentStrategy, OpyScriptLoader } from './strategies/opy';
 import { PaypalExpressPaymentStrategy, PaypalScriptLoader } from './strategies/paypal';
-import {
-    createStepHandler,
-    createSubStrategyRegistry,
-    PaymentResumer,
-    PPSDKStrategy,
-} from './strategies/ppsdk';
 import { QuadpayPaymentStrategy } from './strategies/quadpay';
 import { SquarePaymentStrategy, SquareScriptLoader } from './strategies/square';
 import { WepayPaymentStrategy, WepayRiskClient } from './strategies/wepay';
 import { WorldpayaccessPaymetStrategy } from './strategies/worldpayaccess';
-import { CULQIStrategy } from './strategies/culqi';
+import {
+    createStepHandler as ppsdkCreateStepHandler,
+    createSubStrategyRegistry as ppsdkCreateSubStrategyRegistry,
+    PaymentResumer as PPSDKPaymentResumer,
+    PPSDKStrategy,
+} from './strategies/ppsdk';
+import {
+    createStepHandler as culqiCreateStepHandler,
+    createSubStrategyRegistry as culqiCreateSubStrategyRegistry,
+    PaymentResumer as CULQIPaymentResumer,
+    CULQIStrategy,
+} from './strategies/culqi';
 
 export default function createPaymentStrategyRegistry(
     store: CheckoutStore,
@@ -162,7 +167,8 @@ export default function createPaymentStrategyRegistry(
         spamProtectionActionCreator,
     );
     const formPoster = createFormPoster();
-    const stepHandler = createStepHandler(formPoster, paymentHumanVerificationHandler);
+    const ppsdkStepHandler = ppsdkCreateStepHandler(formPoster, paymentHumanVerificationHandler);
+    const culqiStepHandler = culqiCreateStepHandler(formPoster, paymentHumanVerificationHandler);
     const hostedFormFactory = new HostedFormFactory(store);
     const storefrontPaymentRequestSender = new StorefrontPaymentRequestSender(requestSender);
 
@@ -461,33 +467,33 @@ export default function createPaymentStrategyRegistry(
             new PPSDKStrategy(
                 store,
                 orderActionCreator,
-                createSubStrategyRegistry(
+                ppsdkCreateSubStrategyRegistry(
                     store,
                     orderActionCreator,
                     requestSender,
-                    stepHandler,
+                    ppsdkStepHandler,
                     hostedFormFactory,
                 ),
-                new PaymentResumer(requestSender, stepHandler),
+                new PPSDKPaymentResumer(requestSender, ppsdkStepHandler),
                 new BrowserStorage('PPSDK'),
             ),
     );
 
     registry.register(
         PaymentStrategyType.CULQI,
-        () => 
+        () =>
             new CULQIStrategy(
                 store,
                 orderActionCreator,
-                createSubStrategyRegistry(
+                culqiCreateSubStrategyRegistry(
                     store,
                     orderActionCreator,
                     requestSender,
-                    stepHandler,
+                    culqiStepHandler,
                     hostedFormFactory,
                 ),
-                new PaymentResumer(requestSender, stepHandler),
-                new BrowserStorage('PPSDK'),
+                new CULQIPaymentResumer(requestSender, culqiStepHandler),
+                new BrowserStorage('CULQI'),
             ),
     )
 
